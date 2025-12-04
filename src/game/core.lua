@@ -41,12 +41,12 @@ Core.load = function()
     end
 
     print("Generating nodes")
-    local nodes = AStar.generateNodes(50, 50)
-    if nodes == nil then return end
-    print("Got "..#nodes .." nodes!")
-    local startNode = nodes[1][1]
-    local endNode = nodes[40][50]
-    local path = AStar.findPath(nodes, startNode, endNode)
+    Core.nodes = AStar.generateNodes(50, 50)
+    if Core.nodes == nil then return end
+    print("Got " .. #Core.nodes .. " nodes!")
+    Core.startNode = Core.nodes[1][1]
+    Core.endNode = Core.nodes[40][50]
+    local path = AStar.findPath(Core.nodes, Core.startNode, Core.endNode)
     print("Got path of length ".. #path)
     for i, node in ipairs(path) do
         print("Step " .. i .. ": (" .. node.x .. "/" .. node.y .. ")")
@@ -100,7 +100,7 @@ Core.mousepressed = function(x, y, button, istouch, presses)
         Core.gameStarted = love.timer.getTime()
     end
 
-    if Core.status ~= INGAME or Core.revealedButtons >= 2 or button ~= 1 then
+    if Core.status ~= INGAME then
         return
     end
 end

@@ -27,7 +27,26 @@ UI.draw = function()
 end
 
 UI.drawGame = function()
-
+    local padding = 1
+    local gridSize = #Core.nodes
+    local totalPadding = (gridSize + 1) * padding
+    local cellSize = (Core.screen.minSize - totalPadding) / gridSize
+    for i, row in ipairs(Core.nodes) do
+        for j, node in ipairs(row) do
+            if node == Core.endNode then
+                love.graphics.setColor(1, 0, 0)
+            elseif node == Core.startNode then
+                love.graphics.setColor(0, 1, 0)
+            else
+                love.graphics.setColor(1, 1, 1)
+            end
+            local xOffset = (Core.screen.w - Core.screen.minSize) / 2
+            local yOffset = (Core.screen.h - Core.screen.minSize) / 2
+            local x = xOffset + node.x * cellSize + node.x * padding
+            local y = yOffset + node.y * cellSize + node.y * padding
+            love.graphics.rectangle("fill", x, y, cellSize, cellSize)
+        end
+    end
 end
 
 UI.drawHelp = function()
