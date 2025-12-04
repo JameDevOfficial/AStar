@@ -1,6 +1,7 @@
 Core = require("game.core")
 Settings = require("game.settings")
 UI = require("game.ui")
+AStar = require("game.astar")
 
 function love.load()
     Core.load()

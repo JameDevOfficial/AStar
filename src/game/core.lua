@@ -40,6 +40,18 @@ Core.load = function()
         Core.isMobile = false
     end
 
+    print("Generating nodes")
+    local nodes = AStar.generateNodes(50, 50)
+    if nodes == nil then return end
+    print("Got "..#nodes .." nodes!")
+    local startNode = nodes[1][1]
+    local endNode = nodes[40][50]
+    local path = AStar.findPath(nodes, startNode, endNode)
+    print("Got path of length ".. #path)
+    for i, node in ipairs(path) do
+        print("Step " .. i .. ": (" .. node.x .. "/" .. node.y .. ")")
+    end
+
     Core.status = INMENU
 end
 
