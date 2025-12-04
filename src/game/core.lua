@@ -46,9 +46,9 @@ Core.load = function()
     print("Got " .. #Core.nodes .. " nodes!")
     Core.startNode = Core.nodes[1][1]
     Core.endNode = Core.nodes[40][50]
-    local path = AStar.findPath(Core.nodes, Core.startNode, Core.endNode)
-    print("Got path of length ".. #path)
-    for i, node in ipairs(path) do
+    Core.path = AStar.findPath(Core.nodes, Core.startNode, Core.endNode)
+    print("Got path of length " .. #Core.path)
+    for i, node in ipairs(Core.path) do
         print("Step " .. i .. ": (" .. node.x .. "/" .. node.y .. ")")
     end
 
