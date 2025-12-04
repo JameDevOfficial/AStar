@@ -2,8 +2,8 @@ local M = {}
 
 M.DEBUG = false
 
-M.buttons = {}
-M.buttons.delay = 2
+M.AStar = {}
+M.AStar.size = {w = 50, h = 50}
 
 M.fonts = {}
 M.fonts.quirkyRobot = "assets/fonts/QuirkyRobot.ttf"
