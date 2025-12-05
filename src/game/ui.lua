@@ -37,10 +37,10 @@ UI.drawGame = function()
                 love.graphics.setColor(1, 0, 0)
             elseif node == Core.startNode then
                 love.graphics.setColor(0, 1, 0)
-            elseif table.contains(Core.path, node) then
-                love.graphics.setColor(0, 0, 1)
             elseif node.isWall == true then
                 love.graphics.setColor(0.8, 0.8, 0.8)
+            elseif table.contains(Core.path, node) then
+                love.graphics.setColor(0, 0, 1)
             else
                 love.graphics.setColor(1, 1, 1)
             end

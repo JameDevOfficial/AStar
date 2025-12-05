@@ -35,8 +35,7 @@ function AStar.generateNodes(w, h)
                 g = nil,
                 h = nil,
                 f = nil,
-                parent = nil,
-                hasChanged = false
+                parent = nil
             }
         end
     end

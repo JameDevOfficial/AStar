@@ -46,12 +46,7 @@ Core.load = function()
     print("Got " .. #Core.nodes .. " nodes!")
     Core.startNode = Core.nodes[1][1]
     Core.endNode = Core.nodes[40][50]
-    Core.path = AStar.findPath(Core.nodes, Core.startNode, Core.endNode)
-    print("Got path of length " .. #Core.path)
-    for i, node in ipairs(Core.path) do
-        print("Step " .. i .. ": (" .. node.x .. "/" .. node.y .. ")")
-    end
-
+    Core.updateAStar()
     Core.status = INMENU
 end
 
@@ -82,7 +77,7 @@ Core.keypressed = function(key, scancode, isrepeat)
 
     if Core.status == INGAME then
         if key == "space" then
-
+            Core.updateAStar()
         end
     end
 end
@@ -100,8 +95,14 @@ Core.mousepressed = function(x, y, button, istouch, presses)
         Core.gameStarted = love.timer.getTime()
     end
 
-    if Core.status ~= INGAME then
-        return
+    if Core.status == INGAME then
+        if love.mouse.isDown(1) then
+            local node = Core.getNodeFromPosition(x, y, Core.nodes)
+            if node then
+                if Core.drawWalls == nil then Core.drawWalls = not node.isWall end
+                node.isWall = Core.drawWalls
+            end
+        end
     end
 end
 
@@ -109,22 +110,16 @@ Core.mousemoved = function(x, y, dx, dy, istouch)
     if Core.status == INGAME then
         if love.mouse.isDown(1) then
             local node = Core.getNodeFromPosition(x, y, Core.nodes)
-            if node and not node.hasChanged then
-                node.isWall = not node.isWall
-                node.hasChanged = true
+            if node then
+                if Core.drawWalls == nil then Core.drawWalls = not node.isWall end
+                node.isWall = Core.drawWalls
             end
         end
     end
 end
 
 function Core.mousereleased(x, y, button, istouch, presses)
-    if Core.status == INGAME then
-        for i, row in ipairs(Core.nodes) do
-            for j, node in ipairs(row) do
-                node.hasChanged = false
-            end
-        end
-    end
+    Core.drawWalls = nil
 end
 
 function Core.getNodeFromPosition(x, y, table)
@@ -140,6 +135,14 @@ function Core.getNodeFromPosition(x, y, table)
                 return cell
             end
         end
+    end
+end
+
+function Core.updateAStar()
+        Core.path = AStar.findPath(Core.nodes, Core.startNode, Core.endNode)
+    print("Got path of length " .. #Core.path)
+    for i, node in ipairs(Core.path) do
+        print("Step " .. i .. ": (" .. node.x .. "/" .. node.y .. ")")
     end
 end
 
