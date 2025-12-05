@@ -101,6 +101,7 @@ Core.mousepressed = function(x, y, button, istouch, presses)
             if node then
                 if Core.drawWalls == nil then Core.drawWalls = not node.isWall end
                 node.isWall = Core.drawWalls
+                Core.updateAStar()
             end
         end
     end
@@ -113,6 +114,7 @@ Core.mousemoved = function(x, y, dx, dy, istouch)
             if node then
                 if Core.drawWalls == nil then Core.drawWalls = not node.isWall end
                 node.isWall = Core.drawWalls
+                Core.updateAStar()
             end
         end
     end
@@ -139,7 +141,7 @@ function Core.getNodeFromPosition(x, y, table)
 end
 
 function Core.updateAStar()
-        Core.path = AStar.findPath(Core.nodes, Core.startNode, Core.endNode)
+    Core.path = AStar.findPath(Core.nodes, Core.startNode, Core.endNode)
     print("Got path of length " .. #Core.path)
     for i, node in ipairs(Core.path) do
         print("Step " .. i .. ": (" .. node.x .. "/" .. node.y .. ")")
