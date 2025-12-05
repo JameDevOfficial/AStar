@@ -47,7 +47,7 @@ UI.drawGame = function()
             local xOffset = (Core.screen.w - Core.screen.minSize) / 2
             local yOffset = (Core.screen.h - Core.screen.minSize) / 2
             local x = xOffset + node.x * UI.cellSize + node.x * UI.padding
-            local y = yOffset + node.y * UI.cellSize + node.y * UI.padding
+            local y = yOffset + (node.y -1) * UI.cellSize + node.y * UI.padding
             love.graphics.rectangle("fill", x, y, UI.cellSize, UI.cellSize)
         end
     end

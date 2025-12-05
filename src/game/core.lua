@@ -130,7 +130,7 @@ function Core.getNodeFromPosition(x, y, table)
     for i, row in ipairs(table) do
         for j, cell in ipairs(row) do
             local cellPixelX = xOffset + cell.x * UI.cellSize + cell.x * UI.padding
-            local cellPixelY = yOffset + cell.y * UI.cellSize + cell.y * UI.padding
+            local cellPixelY = yOffset + (cell.y - 1) * UI.cellSize + cell.y * UI.padding
             if x > cellPixelX and x < cellPixelX + UI.cellSize and
                 y > cellPixelY and y < cellPixelY + UI.cellSize then
                 print("Found cell")
