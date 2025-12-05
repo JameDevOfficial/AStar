@@ -1,8 +1,8 @@
 local AStar = {}
 
 local neighbors = {
-    { 1, 0 }, { 0, -1 }, { -1, 0 }, { 0, 1 },
-    {-1,-1}, {-1,1}, {1,1}, {1,-1}
+    { 1,  0 }, { 0, -1 }, { -1, 0 }, { 0, 1 },
+    { -1, -1 }, { -1, 1 }, { 1, 1 }, { 1, -1 }
 }
 
 function table.contains(table, element)
@@ -35,7 +35,8 @@ function AStar.generateNodes(w, h)
                 g = nil,
                 h = nil,
                 f = nil,
-                parent = nil
+                parent = nil,
+                hasChanged = false
             }
         end
     end
@@ -83,7 +84,7 @@ function AStar.findPath(nodes, startNode, endNode)
             local neighbor = nodes[ny] and nodes[ny][nx]
             if neighbor then
                 if not neighbor.isWall and
-                    not table.contains(finishedNodes, neighbor) and 
+                    not table.contains(finishedNodes, neighbor) and
                     not table.contains(liveNodes, neighbor) then
                     neighbor.g = current.g + 1
                     neighbor.h = math.abs(neighbor.x - endNode.x) + math.abs(neighbor.y - endNode.y)

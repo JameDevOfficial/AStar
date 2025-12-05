@@ -107,6 +107,39 @@ end
 
 Core.mousemoved = function(x, y, dx, dy, istouch)
     if Core.status == INGAME then
+        if love.mouse.isDown(1) then
+            local node = Core.getNodeFromPosition(x, y, Core.nodes)
+            if node and not node.hasChanged then
+                node.isWall = not node.isWall
+                node.hasChanged = true
+            end
+        end
+    end
+end
+
+function Core.mousereleased(x, y, button, istouch, presses)
+    if Core.status == INGAME then
+        for i, row in ipairs(Core.nodes) do
+            for j, node in ipairs(row) do
+                node.hasChanged = false
+            end
+        end
+    end
+end
+
+function Core.getNodeFromPosition(x, y, table)
+    local xOffset = (Core.screen.w - Core.screen.minSize) / 2
+    local yOffset = (Core.screen.h - Core.screen.minSize) / 2
+    for i, row in ipairs(table) do
+        for j, cell in ipairs(row) do
+            local cellPixelX = xOffset + cell.x * UI.cellSize + cell.x * UI.padding
+            local cellPixelY = yOffset + cell.y * UI.cellSize + cell.y * UI.padding
+            if x > cellPixelX and x < cellPixelX + UI.cellSize and
+                y > cellPixelY and y < cellPixelY + UI.cellSize then
+                print("Found cell")
+                return cell
+            end
+        end
     end
 end
 

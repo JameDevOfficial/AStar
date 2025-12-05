@@ -27,10 +27,10 @@ UI.draw = function()
 end
 
 UI.drawGame = function()
-    local padding = 1
+    UI.padding = 1
     local gridSize = #Core.nodes
-    local totalPadding = (gridSize + 1) * padding
-    local cellSize = (Core.screen.minSize - totalPadding) / gridSize
+    local totalPadding = (gridSize + 1) * UI.padding
+    UI.cellSize = (Core.screen.minSize - totalPadding) / gridSize
     for i, row in ipairs(Core.nodes) do
         for j, node in ipairs(row) do
             if node == Core.endNode then
@@ -39,14 +39,16 @@ UI.drawGame = function()
                 love.graphics.setColor(0, 1, 0)
             elseif table.contains(Core.path, node) then
                 love.graphics.setColor(0, 0, 1)
+            elseif node.isWall == true then
+                love.graphics.setColor(0.8, 0.8, 0.8)
             else
                 love.graphics.setColor(1, 1, 1)
             end
             local xOffset = (Core.screen.w - Core.screen.minSize) / 2
             local yOffset = (Core.screen.h - Core.screen.minSize) / 2
-            local x = xOffset + node.x * cellSize + node.x * padding
-            local y = yOffset + node.y * cellSize + node.y * padding
-            love.graphics.rectangle("fill", x, y, cellSize, cellSize)
+            local x = xOffset + node.x * UI.cellSize + node.x * UI.padding
+            local y = yOffset + node.y * UI.cellSize + node.y * UI.padding
+            love.graphics.rectangle("fill", x, y, UI.cellSize, UI.cellSize)
         end
     end
 end
