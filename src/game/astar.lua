@@ -1,8 +1,7 @@
 local AStar = {}
 
 local neighbors = {
-    { 1,  0 }, { 0, -1 }, { -1, 0 }, { 0, 1 },
-    { -1, -1 }, { -1, 1 }, { 1, 1 }, { 1, -1 }
+    {0,-1},{-1,-1},{-1,0},{-1,1},{0,1},{1,1},{1,0},{1,-1}
 }
 
 function table.contains(table, element)
