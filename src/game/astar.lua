@@ -4,8 +4,6 @@ local neighbors = {
     { 0,  -1 }, { -1, 0 }, { 0, 1 }, { 1, 0 },
     { -1, -1 }, { -1, 1 }, { 1, 1 }, { 1, -1 }
 }
-local diagonalNeighbors = {
-}
 
 function table.contains(table, element)
     for _, value in pairs(table) do
@@ -62,6 +60,34 @@ local function manhattan(x1, y1, x2, y2)
     return math.abs(x1 - x2) + math.abs(y1 - y2)
 end
 
+local function isDiagonal(x, y)
+    if (math.abs(x) == 1 and math.abs(y) == 1) then
+        return true
+    end
+    return false
+end
+
+local function diagonalThroughWalls(x, y, nodes, cx, cy)
+    if x == 1 and y == -1 then -- top right
+        if nodes[cy][cx + 1].isWall and nodes[cy - 1][cx].isWall then
+            return true
+        end
+    elseif x == -1 and y == -1 then -- top left
+        if nodes[cy][cx - 1].isWall and nodes[cy - 1][cx].isWall then
+            return true
+        end
+    elseif x == 1 and y == 1 then -- bottom right
+        if nodes[cy][cx + 1].isWall and nodes[cy + 1][cx].isWall then
+            return true
+        end
+    elseif x == -1 and y == 1 then -- bottom left
+        if nodes[cy][cx - 1].isWall and nodes[cy + 1][cx].isWall then
+            return true
+        end
+    end
+    return false
+end
+
 function AStar.findPath(nodes, startNode, endNode)
     startNode.g = 0
     startNode.h = manhattan(startNode.x, startNode.y, endNode.x, endNode.y)
@@ -90,7 +116,8 @@ function AStar.findPath(nodes, startNode, endNode)
             if neighbor then
                 if not neighbor.isWall and
                     not table.contains(finishedNodes, neighbor) and
-                    not table.contains(liveNodes, neighbor) then
+                    not table.contains(liveNodes, neighbor) and
+                    not (isDiagonal(direction[1], direction[2]) and diagonalThroughWalls(direction[1], direction[2], nodes, current.x, current.y)) then
                     local moveCost = (direction[1] ~= 0 and direction[2] ~= 0) and 2 or 1
                     neighbor.g = current.g + moveCost
                     neighbor.h = manhattan(neighbor.x, neighbor.y, endNode.x, endNode.y)
