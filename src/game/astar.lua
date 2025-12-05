@@ -1,10 +1,10 @@
 local AStar = {}
 
 local neighbors = {
-    { 0, -1 }, { -1, 0 }, { 0, 1 }, { 1, 0 }
+    { 0,  -1 }, { -1, 0 }, { 0, 1 }, { 1, 0 },
+    { -1, -1 }, { -1, 1 }, { 1, 1 }, { 1, -1 }
 }
 local diagonalNeighbors = {
-    { -1, -1 }, { -1, 1 }, { 1, 1 }, { 1, -1 }
 }
 
 function table.contains(table, element)
@@ -58,9 +58,13 @@ local function tracePath(startNode, endNode)
     return path
 end
 
+local function manhattan(x1, y1, x2, y2)
+    return math.abs(x1 - x2) + math.abs(y1 - y2)
+end
+
 function AStar.findPath(nodes, startNode, endNode)
     startNode.g = 0
-    startNode.h = math.abs(startNode.x - endNode.x) + math.abs(startNode.y - endNode.y)
+    startNode.h = manhattan(startNode.x, startNode.y, endNode.x, endNode.y)
     startNode.f = startNode.g + startNode.h
 
     local liveNodes = { startNode }
@@ -87,8 +91,9 @@ function AStar.findPath(nodes, startNode, endNode)
                 if not neighbor.isWall and
                     not table.contains(finishedNodes, neighbor) and
                     not table.contains(liveNodes, neighbor) then
-                    neighbor.g = current.g + 1
-                    neighbor.h = math.abs(neighbor.x - endNode.x) + math.abs(neighbor.y - endNode.y)
+                    local moveCost = (direction[1] ~= 0 and direction[2] ~= 0) and 2 or 1
+                    neighbor.g = current.g + moveCost
+                    neighbor.h = manhattan(neighbor.x, neighbor.y, endNode.x, endNode.y)
                     neighbor.f = neighbor.g + neighbor.h
                     neighbor.parent = current
                     table.insert(liveNodes, neighbor)
