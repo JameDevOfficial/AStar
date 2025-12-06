@@ -18,6 +18,8 @@
 local Core = {}
 Core.gameStarted = 0
 Core.finalTime = 0
+Core.showAnim = true
+Core.animStepTime = 0.01
 
 EXITED = -1
 PAUSED = 0
@@ -43,7 +45,7 @@ Core.load = function()
     print("Generating nodes")
     Core.nodes = AStar.generateNodes(50, 50)
     if Core.nodes == nil then return end
-    print("Got " .. #Core.nodes .. " nodes!")
+    print("Got " .. #Core.nodes * #Core.nodes[1] .. " nodes!")
     Core.startNode = Core.nodes[1][1]
     Core.endNode = Core.nodes[40][50]
     Core.updateAStar()
@@ -78,6 +80,8 @@ Core.keypressed = function(key, scancode, isrepeat)
     if Core.status == INGAME then
         if key == "space" then
             Core.updateAStar()
+        elseif key == "t" then
+            Core.showAnim = not Core.showAnim
         end
     end
 end
@@ -133,7 +137,6 @@ function Core.getNodeFromPosition(x, y, table)
             local cellPixelY = yOffset + (cell.y - 1) * UI.cellSize + cell.y * UI.padding
             if x > cellPixelX and x < cellPixelX + UI.cellSize and
                 y > cellPixelY and y < cellPixelY + UI.cellSize then
-                print("Found cell")
                 return cell
             end
         end
@@ -142,10 +145,6 @@ end
 
 function Core.updateAStar()
     Core.path = AStar.findPath(Core.nodes, Core.startNode, Core.endNode)
-    print("Got path of length " .. #Core.path)
-    for i, node in ipairs(Core.path) do
-        print("Step " .. i .. ": (" .. node.x .. "/" .. node.y .. ")")
-    end
 end
 
 return Core

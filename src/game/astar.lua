@@ -93,13 +93,13 @@ function AStar.findPath(nodes, startNode, endNode)
     startNode.h = manhattan(startNode.x, startNode.y, endNode.x, endNode.y)
     startNode.f = startNode.g + startNode.h
 
-    local liveNodes = { startNode }
-    local finishedNodes = {}
+    AStar.liveNodes = { startNode }
+    AStar.finishedNodes = {}
 
-    while #liveNodes > 0 do
-        local current = liveNodes[1]
+    while #AStar.liveNodes > 0 do
+        local current = AStar.liveNodes[1]
         local currentPos = 1
-        for i, node in ipairs(liveNodes) do
+        for i, node in ipairs(AStar.liveNodes) do
             if node.f < current.f then
                 current = node
                 currentPos = i
@@ -107,23 +107,23 @@ function AStar.findPath(nodes, startNode, endNode)
         end
         if current == endNode then return tracePath(startNode, endNode) end
 
-        table.remove(liveNodes, currentPos)
-        table.insert(finishedNodes, current)
+        table.remove(AStar.liveNodes, currentPos)
+        table.insert(AStar.finishedNodes, current)
 
         for _, direction in ipairs(neighbors) do
             local nx, ny = current.x + direction[1], current.y + direction[2]
             local neighbor = nodes[ny] and nodes[ny][nx]
             if neighbor then
                 if not neighbor.isWall and
-                    not table.contains(finishedNodes, neighbor) and
-                    not table.contains(liveNodes, neighbor) and
+                    not table.contains(AStar.finishedNodes, neighbor) and
+                    not table.contains(AStar.liveNodes, neighbor) and
                     not (isDiagonal(direction[1], direction[2]) and diagonalThroughWalls(direction[1], direction[2], nodes, current.x, current.y)) then
                     local moveCost = (direction[1] ~= 0 and direction[2] ~= 0) and 2 or 1
                     neighbor.g = current.g + moveCost
                     neighbor.h = manhattan(neighbor.x, neighbor.y, endNode.x, endNode.y)
                     neighbor.f = neighbor.g + neighbor.h
                     neighbor.parent = current
-                    table.insert(liveNodes, neighbor)
+                    table.insert(AStar.liveNodes, neighbor)
                 end
             end
         end

@@ -41,6 +41,10 @@ UI.drawGame = function()
                 love.graphics.setColor(0.8, 0.8, 0.8)
             elseif table.contains(Core.path, node) then
                 love.graphics.setColor(0, 0, 1)
+            elseif Core.showAnim == true and table.contains(AStar.finishedNodes, node) then
+                love.graphics.setColor(0.5,0.5,1)
+            elseif Core.showAnim == true and table.contains(AStar.finishedNodes, node) then
+                love.graphics.setColor(0.5, 0.5, 0.7)
             else
                 love.graphics.setColor(1, 1, 1)
             end
