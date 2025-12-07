@@ -113,6 +113,9 @@ Core.keypressed = function(key, scancode, isrepeat)
             print("Increased Animation speed to " .. Core.animStepTime)
         elseif key == "r" then
             Core.updateAStar(true)
+        elseif key == "c" then
+            Core.generateNodes()
+            Core.updateAStar(true)
         end
     end
 end
