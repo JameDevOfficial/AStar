@@ -21,6 +21,7 @@ Core.finalTime = 0
 Core.showAnim = true
 Core.animStepTime = 0.1
 Core.timeSinceLastStep = 0
+Core.restartDelay = 0
 
 EXITED = -1
 PAUSED = 0
@@ -46,18 +47,27 @@ Core.load = function()
     Core.screen = UI.windowResized()
     Core.generateNodes()
     Core.updateAStar()
-
     Core.status = INMENU
 end
 
 Core.update = function(dt)
+    local response
     Core.timeSinceLastStep = Core.timeSinceLastStep + dt
     if Core.showAnim and Core.timeSinceLastStep > Core.animStepTime then
-        Core.updateAStar(false)
+        response = Core.updateAStar(false)
         Core.timeSinceLastStep = 0
     end
     if Core.status == INMENU then
-
+        if response == "finished" or response == "found" then
+            Core.restartDelay = Core.restartDelay + dt + Core.animStepTime
+            print("Finished " .. Core.restartDelay)
+            if Core.restartDelay > 2 then
+                print("Restart")
+                Core.generateNodes()
+                Core.updateAStar(true)
+                Core.restartDelay = 0
+            end
+        end
     elseif Core.status == INGAME then
 
     end
@@ -102,7 +112,6 @@ Core.keypressed = function(key, scancode, isrepeat)
         end
     end
 end
-
 
 Core.mousepressed = function(x, y, button, istouch, presses)
     if Core.status == INHELP and Core.isMobile then
@@ -182,8 +191,8 @@ function Core.getNodeFromPosition(x, y, table)
 end
 
 function Core.updateAStar(restart)
+    local response = "continue"
     if Core.showAnim then
-        local response = "continue"
         local path
         if restart then
             response, path = AStar.findPathStep(Core.nodes, Core.startNode, Core.endNode, true)
@@ -197,6 +206,7 @@ function Core.updateAStar(restart)
     else
         Core.path = AStar.findPath(Core.nodes, Core.startNode, Core.endNode)
     end
+    return response
 end
 
 function Core.validateStepTime()
@@ -214,6 +224,33 @@ function Core.generateNodes()
     print("Got " .. #Core.nodes * #Core.nodes[1] .. " nodes!")
     Core.startNode = Core.nodes[1][1]
     Core.endNode = Core.nodes[#Core.nodes][#Core.nodes[1]]
+    Core.spawnRandomGrid(Core.nodes, Core.startNode, Core.endNode, (#Core.nodes * #Core.nodes[1]) / 10)
+end
+
+function Core.spawnRandomGrid(nodes, startNode, endNode, maxWalls)
+    local spawnChance = maxWalls / (#nodes * #nodes[1])
+    for i, row in ipairs(nodes) do
+        for j, node in ipairs(row) do
+            if node ~= startNode or node ~= endNode then
+                local spawn = math.random()
+                if spawn <= spawnChance then
+                    node.isWall = true
+                end
+            end
+        end
+    end
+    local newStartNode = nodes[math.random(1, #nodes)][math.random(1, #nodes[1])]
+    local newEndNode = nodes[math.random(1, #nodes)][math.random(1, #nodes[1])]
+    while newEndNode == newStartNode do
+        newStartNode = nodes[math.random(1, #nodes)][math.random(1, #nodes[1])]
+        newEndNode = nodes[math.random(1, #nodes)][math.random(1, #nodes[1])]
+    end
+    if newEndNode ~= newStartNode then
+        Core.startNode = newStartNode
+        Core.endNode = newEndNode
+        Core.startNode.isWall = false
+        Core.endNode.isWall = false
+    end
 end
 
 return Core
