@@ -118,7 +118,7 @@ function AStar.findPath(nodes, startNode, endNode)
                     not table.contains(AStar.finishedNodes, neighbor) and
                     not table.contains(AStar.liveNodes, neighbor) and
                     not (isDiagonal(direction[1], direction[2]) and diagonalThroughWalls(direction[1], direction[2], nodes, current.x, current.y)) then
-                    local moveCost = (direction[1] ~= 0 and direction[2] ~= 0) and 2 or 1
+                    local moveCost = (direction[1] ~= 0 and direction[2] ~= 0) and math.sqrt(2) or 1
                     neighbor.g = current.g + moveCost
                     neighbor.h = manhattan(neighbor.x, neighbor.y, endNode.x, endNode.y)
                     neighbor.f = neighbor.g + neighbor.h

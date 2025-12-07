@@ -55,7 +55,9 @@ end
 Core.update = function(dt)
     if Core.status == INMENU then
     elseif Core.status == INGAME then
-        Core.updateAStar(false)
+        if Core.showAnim then
+            Core.updateAStar(false)
+        end
     end
 end
 
@@ -83,6 +85,7 @@ Core.keypressed = function(key, scancode, isrepeat)
             Core.updateAStar(true)
         elseif key == "t" then
             Core.showAnim = not Core.showAnim
+            Core.updateAStar(false)
         end
     end
 end
