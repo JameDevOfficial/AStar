@@ -17,6 +17,8 @@ end
 
 function love.resize()
     Core.screen = UI.windowResized()
+    Core.generateNodes()
+    Core.updateAStar(true)
 end
 
 function love.keypressed(key, scancode, isrepeat)

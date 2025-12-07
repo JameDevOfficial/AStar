@@ -22,12 +22,14 @@ function table.reverse(tab)
     return tab
 end
 
-function AStar.generateNodes(w, h)
-    local w, h = w or Settings.AStar.size.w, h or Settings.AStar.size.h
+function AStar.generateNodes(w, h, minCellSize)
+    minCellSize = minCellSize or 10
+    local cols = math.floor(w / minCellSize)
+    local rows = math.floor(h / minCellSize)
     local nodes = {}
-    for i = 1, h, 1 do
+    for i = 1, rows, 1 do
         nodes[i] = {}
-        for j = 1, w, 1 do
+        for j = 1, cols, 1 do
             nodes[i][j] = {
                 x = j,
                 y = i,

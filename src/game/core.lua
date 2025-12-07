@@ -36,21 +36,17 @@ end
 Core.load = function()
     Core.status = LOADING
     math.randomseed(os.time())
-    love.window.maximize()
-    Core.screen = UI.windowResized()
     if love.system.getOS() == "Android" or love.system.getOS() == "iOS" then
         Core.isMobile = true
     else
         Core.isMobile = false
     end
 
-    print("Generating nodes")
-    Core.nodes = AStar.generateNodes(50, 50)
-    if Core.nodes == nil then return end
-    print("Got " .. #Core.nodes * #Core.nodes[1] .. " nodes!")
-    Core.startNode = Core.nodes[1][1]
-    Core.endNode = Core.nodes[40][50]
+    love.window.maximize()
+    Core.screen = UI.windowResized()
+    Core.generateNodes()
     Core.updateAStar()
+
     Core.status = INMENU
 end
 
@@ -164,14 +160,21 @@ function Core.mousereleased(x, y, button, istouch, presses)
 end
 
 function Core.getNodeFromPosition(x, y, table)
-    local xOffset = (Core.screen.w - Core.screen.minSize) / 2
-    local yOffset = (Core.screen.h - Core.screen.minSize) / 2
+    local gridRows = #table
+    local gridCols = #table[1]
+    local padding = 1
+    local cellSize = math.min(
+        (Core.screen.w - (gridCols + 1) * padding) / gridCols,
+        (Core.screen.h - (gridRows + 1) * padding) / gridRows
+    )
+    local xOffset = -UI.cellSizeX
+    local yOffset = 0
     for i, row in ipairs(table) do
         for j, cell in ipairs(row) do
-            local cellPixelX = xOffset + cell.x * UI.cellSize + cell.x * UI.padding
-            local cellPixelY = yOffset + (cell.y - 1) * UI.cellSize + cell.y * UI.padding
-            if x > cellPixelX and x < cellPixelX + UI.cellSize and
-                y > cellPixelY and y < cellPixelY + UI.cellSize then
+            local cellPixelX = xOffset + cell.x * cellSize + cell.x * padding
+            local cellPixelY = yOffset + (cell.y - 1) * cellSize + cell.y * padding
+            if x > cellPixelX and x < cellPixelX + cellSize and
+                y > cellPixelY and y < cellPixelY + cellSize then
                 return cell
             end
         end
@@ -202,6 +205,15 @@ function Core.validateStepTime()
     elseif Core.animStepTime < 0.01 then
         Core.animStepTime = 0.01
     end
+end
+
+function Core.generateNodes()
+    print("Generating nodes")
+    Core.nodes = AStar.generateNodes(Core.screen.w, Core.screen.h, 30)
+    if Core.nodes == nil then return end
+    print("Got " .. #Core.nodes * #Core.nodes[1] .. " nodes!")
+    Core.startNode = Core.nodes[1][1]
+    Core.endNode = Core.nodes[#Core.nodes][#Core.nodes[1]]
 end
 
 return Core

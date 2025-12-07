@@ -28,9 +28,14 @@ end
 
 UI.drawGame = function()
     UI.padding = 1
-    local gridSize = #Core.nodes
-    local totalPadding = (gridSize + 1) * UI.padding
-    UI.cellSize = (Core.screen.minSize - totalPadding) / gridSize
+    local gridRows = #Core.nodes
+    local gridCols = #Core.nodes[1]
+    local totalPaddingX = (gridCols + 1) * UI.padding
+    local totalPaddingY = (gridRows + 1) * UI.padding
+    UI.cellSizeX = (Core.screen.w - totalPaddingX) / gridCols
+    UI.cellSizeY = (Core.screen.h - totalPaddingY) / gridRows
+    local xOffset = -UI.cellSizeX
+    local yOffset = 0
     for i, row in ipairs(Core.nodes) do
         for j, node in ipairs(row) do
             if node == Core.endNode then
@@ -48,11 +53,9 @@ UI.drawGame = function()
             else
                 love.graphics.setColor(1, 1, 1)
             end
-            local xOffset = (Core.screen.w - Core.screen.minSize) / 2
-            local yOffset = (Core.screen.h - Core.screen.minSize) / 2
-            local x = xOffset + node.x * UI.cellSize + node.x * UI.padding
-            local y = yOffset + (node.y - 1) * UI.cellSize + node.y * UI.padding
-            love.graphics.rectangle("fill", x, y, UI.cellSize, UI.cellSize)
+            local x = xOffset + node.x * UI.cellSizeX + node.x * UI.padding
+            local y = yOffset + (node.y - 1) * UI.cellSizeY + node.y * UI.padding
+            love.graphics.rectangle("fill", x, y, UI.cellSizeX, UI.cellSizeY)
         end
     end
 end
