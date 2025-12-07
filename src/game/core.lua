@@ -91,12 +91,14 @@ Core.keypressed = function(key, scancode, isrepeat)
             Core.updateAStar(false)
         elseif key == "q" then
             Core.animStepTime = Core.animStepTime + 0.01
-            print("Decreased Animation speed")
             Core.validateStepTime()
+            print("Decreased Animation speed to " .. Core.animStepTime)
         elseif key == "e" then
             Core.animStepTime = Core.animStepTime - 0.01
-            print("Increased Animation speed")
             Core.validateStepTime()
+            print("Increased Animation speed to " .. Core.animStepTime)
+        elseif key == "r" then
+            Core.updateAStar(true)
         end
     end
 end
@@ -142,6 +144,7 @@ Core.mousemoved = function(x, y, dx, dy, istouch)
                         elseif Core.dragNode[2] == "end" then
                             Core.endNode = node
                         end
+                        Core.updateAStar(true)
                     end
                 else
                     if Core.drawWalls == nil then Core.drawWalls = not node.isWall end
@@ -156,6 +159,7 @@ end
 function Core.mousereleased(x, y, button, istouch, presses)
     Core.drawWalls = nil
     Core.dragNode = nil
+    Core.updateAStar(true)
 end
 
 function Core.getNodeFromPosition(x, y, table)
@@ -180,6 +184,7 @@ function Core.updateAStar(restart)
         if restart then
             response, path = AStar.findPathStep(Core.nodes, Core.startNode, Core.endNode, true)
             Core.path = path
+            collectgarbage("collect")
         end
         response, path = AStar.findPathStep(Core.nodes, Core.startNode, Core.endNode, false)
         if response == "found" then
@@ -191,10 +196,10 @@ function Core.updateAStar(restart)
 end
 
 function Core.validateStepTime()
-    if Core.animStepTime > 1 then
-        Core.animStepTime = 1
-    elseif Core.animStepTime < 0 then
-        Core.animStepTime = 0
+    if Core.animStepTime > 0.1 then
+        Core.animStepTime = 0.1
+    elseif Core.animStepTime < 0.01 then
+        Core.animStepTime = 0.01
     end
 end
 
