@@ -26,7 +26,29 @@ UI.draw = function()
     end
 end
 
+local colors = {
+    {
+        endNode = { 1, 0, 0 },
+        startNode = { 0, 1, 0 },
+        wall = { 0.8, 0.8, 0.8 },
+        path = { 0, 0, 1 },
+        liveNodes = { 0.4, 0.6, 0.8 },
+        finishedNodes = { 0.6, 0.8, 1 },
+        default = { 1, 1, 1 }
+    },
+    {
+        endNode = { 1, 0, 0 },
+        startNode = { 0, 1, 0 },
+        wall = { 0.4, 0.4, 0.4 },
+        path = { 0, 0, 0.7 },
+        liveNodes = { 0.2, 0.4, 0.6 },
+        finishedNodes = { 0.4, 0.6, .8 },
+        default = { 0, 0, 0 }
+    }
+}
+
 local function renderGrid(menuMode)
+    local colorMode = Core.status == INGAME and 1 or 2
     UI.padding = 1
     local gridRows = #Core.nodes
     local gridCols = #Core.nodes[1]
@@ -39,21 +61,19 @@ local function renderGrid(menuMode)
     for i, row in ipairs(Core.nodes) do
         for j, node in ipairs(row) do
             if node == Core.endNode then
-                love.graphics.setColor(1, 0, 0)
+                love.graphics.setColor(colors[colorMode].endNode)
             elseif node == Core.startNode then
-                love.graphics.setColor(0, 1, 0)
+                love.graphics.setColor(colors[colorMode].startNode)
             elseif node.isWall == true then
-                love.graphics.setColor(0.8, 0.8, 0.8)
+                love.graphics.setColor(colors[colorMode].wall)
             elseif Core.path and table.contains(Core.path, node) then
-                love.graphics.setColor(0, 0, 1)
+                love.graphics.setColor(colors[colorMode].path)
             elseif Core.showAnim == true and AStar.liveNodes and table.contains(AStar.liveNodes, node) then
-                love.graphics.setColor(0.4, 0.6, 0.8)
+                love.graphics.setColor(colors[colorMode].liveNodes)
             elseif Core.showAnim == true and table.contains(AStar.finishedNodes, node) then
-                love.graphics.setColor(0.6, 0.8, 1)
-            elseif menuMode then
-                love.graphics.setColor(0, 0, 0, 0)
+                love.graphics.setColor(colors[colorMode].finishedNodes)
             else
-                love.graphics.setColor(1, 1, 1)
+                love.graphics.setColor(colors[colorMode].default)
             end
             local x = xOffset + node.x * UI.cellSizeX + node.x * UI.padding
             local y = yOffset + (node.y - 1) * UI.cellSizeY + node.y * UI.padding
@@ -71,7 +91,7 @@ UI.drawHelp = function()
     love.graphics.setFont(textFontBig)
     local currentY = 100
 
-    local text = string.format("Gameplay: ")
+    local text = string.format("Help: ")
     local width = textFont:getWidth(text)
     local height = textFont:getHeight()
     love.graphics.print(text, (Core.screen.w - width) / 2, currentY)
@@ -79,7 +99,7 @@ UI.drawHelp = function()
 
     love.graphics.setFont(textFont)
     local text = string.format(
-        "No Help yet")
+        "This programm is a visualization of the A* algorithm.\nIt is often used for pathfinding in video games.\nCutting wall corners or squeezing trough 2 walls diagonally\nis disabled.\n\nControls: \nLeft Mouse Button - draw walls, move start and end point\nT - Toggle animation\nQ/E -  Decrease/Increase animation speed\nR - Redo A* algorithm (only useful for animation)\nC - Clear grid\nF5 - Toggle some Debug infos")
     local width = textFont:getWidth(text)
     local height = textFont:getHeight()
     love.graphics.print(text, (Core.screen.w - width) / 2, currentY)
@@ -100,18 +120,6 @@ UI.drawMenu = function()
         love.graphics.print(text, (Core.screen.w - width) / 2, Core.screen.centerY - 100)
     else
         love.graphics.print(text, (Core.screen.w - width) / 2, Core.screen.centerY - 200)
-    end
-
-    love.graphics.setFont(textFont)
-    love.graphics.setColor(1, 1, 1)
-    local ms, s, m
-    local text = UI.secondsToFormat(Core.finalTime)
-    width = textFont:getWidth(text)
-    local height = textFont:getHeight()
-    if Core.isMobile then
-        love.graphics.print(text, (Core.screen.w - width) / 2, Core.screen.centerY - 0)
-    else
-        love.graphics.print(text, (Core.screen.w - width) / 2, Core.screen.centerY - 100)
     end
 
 
@@ -168,19 +176,25 @@ UI.drawDebug = function()
         -- Game
         local dt = love.timer.getDelta()
         local avgDt = love.timer.getAverageDelta()
+        local path = Core.path and #Core.path or 0
 
         local playerText = string.format(
             "Game state: %s\n" ..
             "Delta Time: %.4fs (%.1f ms)\n" ..
             "Avg Delta: %.4fs (%.1f ms)\n" ..
-            "Time: %.2fs\n",
+            "Time: %.2fs\n" ..
+            "Nodes: %02d (%d x %d)\n" ..
+            "Path: %02d\n",
             tostring(Core.status),
             dt, dt * 1000,
             avgDt, avgDt * 1000,
-            love.timer.getTime()
+            love.timer.getTime(),
+            #Core.nodes * #Core.nodes[1],
+            #Core.nodes, #Core.nodes[1],
+            path
         )
         love.graphics.print(playerText, 10, y)
-        y = y + fontDefault:getHeight() * 5
+        y = y + fontDefault:getHeight() * 7
 
         -- System Info
         local renderer = love.graphics.getRendererInfo and love.graphics.getRendererInfo() or ""
