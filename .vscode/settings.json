@@ -1,7 +1,0 @@
-{
-    "conventionalCommits.scopes": [
-        "a*",
-        "ui",
-        "core"
-    ]
-}
