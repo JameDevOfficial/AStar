@@ -136,7 +136,7 @@ UI.drawDebug = function()
         love.graphics.print("Disable (F5) Debug Mode for more FPS")
         y = y + fontDefault:getHeight()
 
-        love.graphics.setColor(0.1, 0.1, 1, 1)
+        love.graphics.setColor(0, 0.5, 0, 1)
         -- FPS
         local fps = love.timer.getFPS()
         local fpsText = string.format("FPS: %d", fps)
