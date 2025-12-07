@@ -26,7 +26,7 @@ UI.draw = function()
     end
 end
 
-UI.drawGame = function()
+local function renderGrid(menuMode)
     UI.padding = 1
     local gridRows = #Core.nodes
     local gridCols = #Core.nodes[1]
@@ -50,6 +50,8 @@ UI.drawGame = function()
                 love.graphics.setColor(0.4, 0.6, 0.8)
             elseif Core.showAnim == true and table.contains(AStar.finishedNodes, node) then
                 love.graphics.setColor(0.6, 0.8, 1)
+            elseif menuMode then
+                love.graphics.setColor(0, 0, 0, 0)
             else
                 love.graphics.setColor(1, 1, 1)
             end
@@ -58,6 +60,10 @@ UI.drawGame = function()
             love.graphics.rectangle("fill", x, y, UI.cellSizeX, UI.cellSizeY)
         end
     end
+end
+
+UI.drawGame = function()
+    renderGrid()
 end
 
 UI.drawHelp = function()
@@ -85,6 +91,7 @@ UI.drawHelp = function()
 end
 
 UI.drawMenu = function()
+    renderGrid(true)
     love.graphics.setColor(0.7, 0.95, 1)
     love.graphics.setFont(titleFont)
     local text = "A*"

@@ -51,13 +51,15 @@ Core.load = function()
 end
 
 Core.update = function(dt)
+    Core.timeSinceLastStep = Core.timeSinceLastStep + dt
+    if Core.showAnim and Core.timeSinceLastStep > Core.animStepTime then
+        Core.updateAStar(false)
+        Core.timeSinceLastStep = 0
+    end
     if Core.status == INMENU then
+
     elseif Core.status == INGAME then
-        Core.timeSinceLastStep = Core.timeSinceLastStep + dt
-        if Core.showAnim and Core.timeSinceLastStep > Core.animStepTime then
-            Core.updateAStar(false)
-            Core.timeSinceLastStep = 0
-        end
+
     end
 end
 
@@ -74,6 +76,7 @@ Core.keypressed = function(key, scancode, isrepeat)
             Core.reset()
             Core.status = INGAME
             Core.gameStarted = love.timer.getTime()
+            Core.showAnim = true
         end
         if key == "h" or key == "H" then
             Core.status = INHELP
@@ -154,9 +157,11 @@ Core.mousemoved = function(x, y, dx, dy, istouch)
 end
 
 function Core.mousereleased(x, y, button, istouch, presses)
-    Core.drawWalls = nil
-    Core.dragNode = nil
-    Core.updateAStar(true)
+    if Core.status == INGAME then
+        Core.drawWalls = nil
+        Core.dragNode = nil
+        Core.updateAStar(true)
+    end
 end
 
 function Core.getNodeFromPosition(x, y, table)
