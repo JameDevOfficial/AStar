@@ -19,7 +19,8 @@ local Core = {}
 Core.gameStarted = 0
 Core.finalTime = 0
 Core.showAnim = true
-Core.animStepTime = 0.01
+Core.animStepTime = 0.1
+Core.timeSinceLastStep = 0
 
 EXITED = -1
 PAUSED = 0
@@ -55,8 +56,10 @@ end
 Core.update = function(dt)
     if Core.status == INMENU then
     elseif Core.status == INGAME then
-        if Core.showAnim then
+        Core.timeSinceLastStep = Core.timeSinceLastStep + dt
+        if Core.showAnim and Core.timeSinceLastStep > Core.animStepTime then
             Core.updateAStar(false)
+            Core.timeSinceLastStep = 0
         end
     end
 end
@@ -86,6 +89,14 @@ Core.keypressed = function(key, scancode, isrepeat)
         elseif key == "t" then
             Core.showAnim = not Core.showAnim
             Core.updateAStar(false)
+        elseif key == "q" then
+            Core.animStepTime = Core.animStepTime + 0.01
+            print("Decreased Animation speed")
+            Core.validateStepTime()
+        elseif key == "e" then
+            Core.animStepTime = Core.animStepTime - 0.01
+            print("Increased Animation speed")
+            Core.validateStepTime()
         end
     end
 end
@@ -159,6 +170,14 @@ function Core.updateAStar(restart)
         end
     else
         Core.path = AStar.findPath(Core.nodes, Core.startNode, Core.endNode)
+    end
+end
+
+function Core.validateStepTime()
+    if Core.animStepTime > 1 then
+        Core.animStepTime = 1
+    elseif Core.animStepTime < 0 then
+        Core.animStepTime = 0
     end
 end
 
