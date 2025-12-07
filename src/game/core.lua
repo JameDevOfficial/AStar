@@ -36,6 +36,7 @@ end
 Core.load = function()
     Core.status = LOADING
     math.randomseed(os.time())
+    love.window.maximize()
     Core.screen = UI.windowResized()
     if love.system.getOS() == "Android" or love.system.getOS() == "iOS" then
         Core.isMobile = true
