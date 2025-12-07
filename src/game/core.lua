@@ -117,9 +117,15 @@ Core.mousepressed = function(x, y, button, istouch, presses)
     if Core.status == INGAME then
         local node = Core.getNodeFromPosition(x, y, Core.nodes)
         if node then
-            if Core.drawWalls == nil then Core.drawWalls = not node.isWall end
-            node.isWall = Core.drawWalls
-            Core.updateAStar(true)
+            if node == Core.startNode then
+                Core.dragNode = { Core.startNode, "start" }
+            elseif node == Core.endNode then
+                Core.dragNode = { Core.endNode, "end" }
+            else
+                if Core.drawWalls == nil then Core.drawWalls = not node.isWall end
+                node.isWall = Core.drawWalls
+                Core.updateAStar(true)
+            end
         end
     end
 end
@@ -129,9 +135,19 @@ Core.mousemoved = function(x, y, dx, dy, istouch)
         if love.mouse.isDown(1) then
             local node = Core.getNodeFromPosition(x, y, Core.nodes)
             if node then
-                if Core.drawWalls == nil then Core.drawWalls = not node.isWall end
-                node.isWall = Core.drawWalls
-                Core.updateAStar(true)
+                if Core.dragNode then
+                    if Core.dragNode[1] ~= node then
+                        if Core.dragNode[2] == "start" then
+                            Core.startNode = node
+                        elseif Core.dragNode[2] == "end" then
+                            Core.endNode = node
+                        end
+                    end
+                else
+                    if Core.drawWalls == nil then Core.drawWalls = not node.isWall end
+                    node.isWall = Core.drawWalls
+                    Core.updateAStar(true)
+                end
             end
         end
     end
@@ -139,6 +155,7 @@ end
 
 function Core.mousereleased(x, y, button, istouch, presses)
     Core.drawWalls = nil
+    Core.dragNode = nil
 end
 
 function Core.getNodeFromPosition(x, y, table)
