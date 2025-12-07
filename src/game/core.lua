@@ -148,6 +148,7 @@ function Core.updateAStar(restart)
         local path
         if restart then
             response, path = AStar.findPathStep(Core.nodes, Core.startNode, Core.endNode, true)
+            Core.path = path
         end
         response, path = AStar.findPathStep(Core.nodes, Core.startNode, Core.endNode, false)
         if response == "found" then
