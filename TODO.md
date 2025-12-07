@@ -1,3 +1,3 @@
 # TODO
-- [ ] Add A* animation of calculation
-- [ ] Make start and end moveable
+- [x] Add A* animation of calculation
+- [x] Make start and end moveable
