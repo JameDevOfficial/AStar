@@ -162,19 +162,14 @@ end
 function Core.getNodeFromPosition(x, y, table)
     local gridRows = #table
     local gridCols = #table[1]
-    local padding = 1
-    local cellSize = math.min(
-        (Core.screen.w - (gridCols + 1) * padding) / gridCols,
-        (Core.screen.h - (gridRows + 1) * padding) / gridRows
-    )
     local xOffset = -UI.cellSizeX
     local yOffset = 0
     for i, row in ipairs(table) do
         for j, cell in ipairs(row) do
-            local cellPixelX = xOffset + cell.x * cellSize + cell.x * padding
-            local cellPixelY = yOffset + (cell.y - 1) * cellSize + cell.y * padding
-            if x > cellPixelX and x < cellPixelX + cellSize and
-                y > cellPixelY and y < cellPixelY + cellSize then
+            local cellPixelX = xOffset + cell.x * UI.cellSizeX + cell.x * UI.padding
+            local cellPixelY = yOffset + (cell.y - 1) * UI.cellSizeY + cell.y * UI.padding
+            if x > cellPixelX and x < cellPixelX + UI.cellSizeX and
+                y > cellPixelY and y < cellPixelY + UI.cellSizeY then
                 return cell
             end
         end
