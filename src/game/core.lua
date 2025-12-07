@@ -204,7 +204,6 @@ function Core.updateAStar(restart)
         if restart then
             response, path = AStar.findPathStep(Core.nodes, Core.startNode, Core.endNode, true)
             Core.path = path
-            collectgarbage("collect")
         end
         response, path = AStar.findPathStep(Core.nodes, Core.startNode, Core.endNode, false)
         if response == "found" then

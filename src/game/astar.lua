@@ -1,4 +1,5 @@
 local AStar = {}
+local SQRT2 = math.sqrt(2)
 
 local neighbors = {
     { 0,  -1 }, { -1, 0 }, { 0, 1 }, { 1, 0 },
@@ -54,7 +55,7 @@ local function tracePath(startNode, endNode)
         if not node then break end
     end
 
-    path = table.reverse(path)
+    table.reverse(path)
     return path
 end
 
@@ -71,19 +72,19 @@ end
 
 local function diagonalThroughWalls(x, y, nodes, cx, cy)
     if x == 1 and y == -1 then -- top right
-        if nodes[cy][cx + 1].isWall and nodes[cy - 1][cx].isWall then
+        if rawget(nodes[cy][cx + 1], "isWall") and rawget(nodes[cy - 1][cx], "isWall") then
             return true
         end
     elseif x == -1 and y == -1 then -- top left
-        if nodes[cy][cx - 1].isWall and nodes[cy - 1][cx].isWall then
+        if rawget(nodes[cy][cx - 1], "isWall") and rawget(nodes[cy - 1][cx], "isWall") then
             return true
         end
     elseif x == 1 and y == 1 then -- bottom right
-        if nodes[cy][cx + 1].isWall and nodes[cy + 1][cx].isWall then
+        if rawget(nodes[cy][cx + 1], "isWall") and rawget(nodes[cy + 1][cx], "isWall") then
             return true
         end
     elseif x == -1 and y == 1 then -- bottom left
-        if nodes[cy][cx - 1].isWall and nodes[cy + 1][cx].isWall then
+        if rawget(nodes[cy][cx - 1], "isWall") and rawget(nodes[cy + 1][cx], "isWall") then
             return true
         end
     end
@@ -94,31 +95,31 @@ local function diagonalThroughCorner(x, y, nodes, cx, cy)
     local rows = #nodes
     local cols = #nodes[1]
     if x == 1 and y == -1 then -- top right
-        if cx + 1 <= cols and nodes[cy][cx + 1] and nodes[cy][cx + 1].isWall then
+        if cx + 1 <= cols and nodes[cy][cx + 1] and rawget(nodes[cy][cx + 1], "isWall") then
             return nodes[cy][cx + 1]
         end
-        if cy - 1 >= 1 and nodes[cy - 1][cx] and nodes[cy - 1][cx].isWall then
+        if cy - 1 >= 1 and nodes[cy - 1][cx] and rawget(nodes[cy - 1][cx], "isWall") then
             return nodes[cy - 1][cx]
         end
     elseif x == -1 and y == -1 then -- top left
-        if cx - 1 >= 1 and nodes[cy][cx - 1] and nodes[cy][cx - 1].isWall then
+        if cx - 1 >= 1 and nodes[cy][cx - 1] and rawget(nodes[cy][cx - 1], "isWall") then
             return nodes[cy][cx - 1]
         end
-        if cy - 1 >= 1 and nodes[cy - 1][cx] and nodes[cy - 1][cx].isWall then
+        if cy - 1 >= 1 and nodes[cy - 1][cx] and rawget(nodes[cy - 1][cx], "isWall") then
             return nodes[cy - 1][cx]
         end
     elseif x == 1 and y == 1 then -- bottom right
-        if cx + 1 <= cols and nodes[cy][cx + 1] and nodes[cy][cx + 1].isWall then
+        if cx + 1 <= cols and nodes[cy][cx + 1] and rawget(nodes[cy][cx + 1], "isWall") then
             return nodes[cy][cx + 1]
         end
-        if cy + 1 <= rows and nodes[cy + 1][cx] and nodes[cy + 1][cx].isWall then
+        if cy + 1 <= rows and nodes[cy + 1][cx] and rawget(nodes[cy + 1][cx], "isWall") then
             return nodes[cy + 1][cx]
         end
     elseif x == -1 and y == 1 then -- bottom left
-        if cx - 1 >= 1 and nodes[cy][cx - 1] and nodes[cy][cx - 1].isWall then
+        if cx - 1 >= 1 and nodes[cy][cx - 1] and rawget(nodes[cy][cx - 1], "isWall") then
             return nodes[cy][cx - 1]
         end
-        if cy + 1 <= rows and nodes[cy + 1][cx] and nodes[cy + 1][cx].isWall then
+        if cy + 1 <= rows and nodes[cy + 1][cx] and rawget(nodes[cy + 1][cx], "isWall") then
             return nodes[cy + 1][cx]
         end
     end
@@ -147,17 +148,18 @@ function AStar.findPath(nodes, startNode, endNode)
         table.remove(AStar.liveNodes, currentPos)
         table.insert(AStar.finishedNodes, current)
 
-        for _, direction in ipairs(neighbors) do
+        for i = 1, 8 do
+            local direction = neighbors[i]
             local nx, ny = current.x + direction[1], current.y + direction[2]
             local neighbor = nodes[ny] and nodes[ny][nx]
             local cornerClip = diagonalThroughCorner(direction[1], direction[2], nodes, current.x, current.y)
             if neighbor then
-                if not neighbor.isWall and
+                if not rawget(neighbor, "isWall") and
                     not table.contains(AStar.finishedNodes, neighbor) and
                     not table.contains(AStar.liveNodes, neighbor) and
                     not cornerClip and
                     not (isDiagonal(direction[1], direction[2]) and diagonalThroughWalls(direction[1], direction[2], nodes, current.x, current.y)) then
-                    local moveCost = (direction[1] ~= 0 and direction[2] ~= 0) and math.sqrt(2) or 1
+                    local moveCost = (direction[1] ~= 0 and direction[2] ~= 0) and SQRT2 or 1
                     neighbor.g = current.g + moveCost
                     neighbor.h = manhattan(neighbor.x, neighbor.y, endNode.x, endNode.y)
                     neighbor.f = neighbor.g + neighbor.h
@@ -205,7 +207,7 @@ function AStar.findPathStep(nodes, startNode, endNode, restart)
         local neighbor = nodes[ny] and nodes[ny][nx]
         local cornerClip = diagonalThroughCorner(direction[1], direction[2], nodes, current.x, current.y)
         if neighbor then
-            if not neighbor.isWall and
+            if not rawget(neighbor, "isWall") and
                 not table.contains(AStar.finishedNodes, neighbor) and
                 not table.contains(AStar.liveNodes, neighbor) and
                 not cornerClip and

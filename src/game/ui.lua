@@ -50,6 +50,7 @@ local colors = {
 local function renderGrid(menuMode)
     local colorMode = Core.status == INGAME and 1 or 2
     UI.padding = 1
+    local nodes = Core.nodes
     local gridRows = #Core.nodes
     local gridCols = #Core.nodes[1]
     local totalPaddingX = (gridCols + 1) * UI.padding
@@ -58,8 +59,10 @@ local function renderGrid(menuMode)
     UI.cellSizeY = (Core.screen.h - totalPaddingY) / gridRows
     local xOffset = -UI.cellSizeX
     local yOffset = 0
-    for i, row in ipairs(Core.nodes) do
-        for j, node in ipairs(row) do
+    for i = 1, gridRows do
+        local row = nodes[i]
+        for j = 1, gridCols do
+            local node = row[j]
             if node == Core.endNode then
                 love.graphics.setColor(colors[colorMode].endNode)
             elseif node == Core.startNode then
