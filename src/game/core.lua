@@ -55,6 +55,7 @@ end
 Core.update = function(dt)
     if Core.status == INMENU then
     elseif Core.status == INGAME then
+        Core.updateAStar(false)
     end
 end
 
@@ -79,7 +80,7 @@ Core.keypressed = function(key, scancode, isrepeat)
 
     if Core.status == INGAME then
         if key == "space" then
-            Core.updateAStar()
+            Core.updateAStar(true)
         elseif key == "t" then
             Core.showAnim = not Core.showAnim
         end
@@ -100,13 +101,11 @@ Core.mousepressed = function(x, y, button, istouch, presses)
     end
 
     if Core.status == INGAME then
-        if love.mouse.isDown(1) then
-            local node = Core.getNodeFromPosition(x, y, Core.nodes)
-            if node then
-                if Core.drawWalls == nil then Core.drawWalls = not node.isWall end
-                node.isWall = Core.drawWalls
-                Core.updateAStar()
-            end
+        local node = Core.getNodeFromPosition(x, y, Core.nodes)
+        if node then
+            if Core.drawWalls == nil then Core.drawWalls = not node.isWall end
+            node.isWall = Core.drawWalls
+            Core.updateAStar(true)
         end
     end
 end
@@ -118,7 +117,7 @@ Core.mousemoved = function(x, y, dx, dy, istouch)
             if node then
                 if Core.drawWalls == nil then Core.drawWalls = not node.isWall end
                 node.isWall = Core.drawWalls
-                Core.updateAStar()
+                Core.updateAStar(true)
             end
         end
     end
@@ -143,8 +142,20 @@ function Core.getNodeFromPosition(x, y, table)
     end
 end
 
-function Core.updateAStar()
-    Core.path = AStar.findPath(Core.nodes, Core.startNode, Core.endNode)
+function Core.updateAStar(restart)
+    if Core.showAnim then
+        local response = "continue"
+        local path
+        if restart then
+            response, path = AStar.findPathStep(Core.nodes, Core.startNode, Core.endNode, true)
+        end
+        response, path = AStar.findPathStep(Core.nodes, Core.startNode, Core.endNode, false)
+        if response == "found" then
+            if path then Core.path = path end
+        end
+    else
+        Core.path = AStar.findPath(Core.nodes, Core.startNode, Core.endNode)
+    end
 end
 
 return Core

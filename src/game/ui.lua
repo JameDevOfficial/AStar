@@ -39,19 +39,19 @@ UI.drawGame = function()
                 love.graphics.setColor(0, 1, 0)
             elseif node.isWall == true then
                 love.graphics.setColor(0.8, 0.8, 0.8)
-            elseif table.contains(Core.path, node) then
+            elseif Core.path and table.contains(Core.path, node) then
                 love.graphics.setColor(0, 0, 1)
+            elseif Core.showAnim == true and AStar.liveNodes and table.contains(AStar.liveNodes, node) then
+                love.graphics.setColor(0.4, 0.6, 0.8)
             elseif Core.showAnim == true and table.contains(AStar.finishedNodes, node) then
-                love.graphics.setColor(0.5,0.5,1)
-            elseif Core.showAnim == true and table.contains(AStar.finishedNodes, node) then
-                love.graphics.setColor(0.5, 0.5, 0.7)
+                love.graphics.setColor(0.6, 0.8, 1)
             else
                 love.graphics.setColor(1, 1, 1)
             end
             local xOffset = (Core.screen.w - Core.screen.minSize) / 2
             local yOffset = (Core.screen.h - Core.screen.minSize) / 2
             local x = xOffset + node.x * UI.cellSize + node.x * UI.padding
-            local y = yOffset + (node.y -1) * UI.cellSize + node.y * UI.padding
+            local y = yOffset + (node.y - 1) * UI.cellSize + node.y * UI.padding
             love.graphics.rectangle("fill", x, y, UI.cellSize, UI.cellSize)
         end
     end
