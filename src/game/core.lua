@@ -21,7 +21,7 @@ Core.finalTime = 0
 Core.showAnim = true
 Core.animStepTime = 0.1
 Core.timeSinceLastStep = 0
-Core.restartDelay = 0
+Core.restartDelay = 2
 
 EXITED = -1
 PAUSED = 0
@@ -45,9 +45,11 @@ Core.load = function()
 
     love.window.maximize()
     Core.screen = UI.windowResized()
-    Core.generateNodes()
-    Core.updateAStar()
     Core.status = INMENU
+
+    Core.generateNodes(true)
+    Core.updateAStar(true)
+    Core.restartDelay = 0
 end
 
 Core.update = function(dt)
@@ -63,7 +65,7 @@ Core.update = function(dt)
             print("Finished " .. Core.restartDelay)
             if Core.restartDelay > 2 then
                 print("Restart")
-                Core.generateNodes()
+                Core.generateNodes(true)
                 Core.updateAStar(true)
                 Core.restartDelay = 0
             end
@@ -84,6 +86,8 @@ Core.keypressed = function(key, scancode, isrepeat)
     if Core.status == INMENU then
         if key == "return" then
             Core.reset()
+            Core.generateNodes()
+            Core.updateAStar(true)
             Core.status = INGAME
             Core.gameStarted = love.timer.getTime()
             Core.showAnim = true
@@ -217,14 +221,14 @@ function Core.validateStepTime()
     end
 end
 
-function Core.generateNodes()
+function Core.generateNodes(randomGrid)
     print("Generating nodes")
     Core.nodes = AStar.generateNodes(Core.screen.w, Core.screen.h, 30)
     if Core.nodes == nil then return end
     print("Got " .. #Core.nodes * #Core.nodes[1] .. " nodes!")
     Core.startNode = Core.nodes[1][1]
     Core.endNode = Core.nodes[#Core.nodes][#Core.nodes[1]]
-    Core.spawnRandomGrid(Core.nodes, Core.startNode, Core.endNode, (#Core.nodes * #Core.nodes[1]) / 10)
+    if randomGrid then Core.spawnRandomGrid(Core.nodes, Core.startNode, Core.endNode, (#Core.nodes * #Core.nodes[1]) / 10) end
 end
 
 function Core.spawnRandomGrid(nodes, startNode, endNode, maxWalls)

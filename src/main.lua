@@ -17,7 +17,11 @@ end
 
 function love.resize()
     Core.screen = UI.windowResized()
-    Core.generateNodes()
+    if Core.status == INGAME then
+        Core.generateNodes()
+    else
+        Core.generateNodes(true)
+    end
     Core.updateAStar(true)
 end
 
